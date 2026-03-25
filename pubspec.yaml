@@ -1,94 +1,57 @@
 name: merchant_delivery
-description: A new Flutter project.
+description: Flyer Eats Merchant App
 
-# The following line prevents the package from being accidentally published to
-# pub.dev using `pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none'
 
-version: 3.0.7+30007
+version: 4.0.0+40000
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^0.1.3
-  custom_timer: ^0.1.1
-  provider: ^4.3.1
-  dio: ^4.0.0
-  #shared_preferences: ^0.5.8
-  shared_preferences: ^2.0.5
-  flushbar: ^1.10.4
-  flutter_staggered_animations: ^1.0.0
-  intl: ^0.16.1
-  #connectivity: ^0.4.9+3
-  connectivity: any
-  charts_flutter: ^0.12.0
-  #permission_handler: ^5.0.1+1
-  permission_handler: ^10.1.0
-  file_utils: ^0.1.4
-  expandable: ^4.1.4
-  #flutter_local_notifications: ^2.0.1+1
-  flutter_local_notifications: 8.1.1+1
-  flutter_launcher_icons: ^0.9.0
-  #firebase_messaging: ^7.0.3
-  firebase_core: ^2.5.0
-#  firebase_messaging: ^10.0.4
-  firebase_messaging: ^14.0.0
-  audioplayers: ^0.20.0
-  url_launcher: ^6.0.2
-  open_file: any
-  volume: ^1.0.1
-  notification_permissions: ^0.4.8
-  fluttertoast: ^4.0.1
-  path_provider: ^2.0.2
-  awesome_notifications: ^0.6.19
-  open_settings: ^2.0.2
-  autostart: ^0.0.1
-  device_info: ^2.0.2
-  clear_all_notifications: ^0.0.2
 
-#dependency_overrides:
-#  firebase_core: ^1.0.2
-#dependencies:
-#  flutter:
-#    sdk: flutter
-#  cupertino_icons: ^0.1.3
-#  custom_timer: ^0.1.1
-#  provider: ^4.3.1
-#  dio: ^4.0.0
-#  #shared_preferences: ^0.5.8
-#  shared_preferences: ^2.0.5
-#  flushbar: ^1.10.4
-#  flutter_staggered_animations: ^1.0.0
-#  intl: ^0.16.1
-#  #connectivity: ^0.4.9+3
-#  connectivity: any
-#  charts_flutter: ^0.12.0
-#  #permission_handler: ^5.0.1+1
-#  permission_handler: ^8.1.4+2
-#  file_utils: ^0.1.4
-#  expandable: ^4.1.4
-#  #flutter_local_notifications: ^2.0.1+1
-#  flutter_local_notifications: 8.1.1+1
-#  flutter_launcher_icons: ^0.9.0
-#  #firebase_messaging: ^7.0.3
-#  firebase_core: ^1.0.2
-#  firebase_messaging: ^10.0.4
-#  audioplayers: ^0.20.0
-#  url_launcher: ^6.0.2
-#  open_file: any
-#  volume: ^1.0.1
-#  notification_permissions: ^0.4.8
-#  fluttertoast: ^4.0.1
-#  path_provider: ^2.0.2
-#  awesome_notifications: ^0.6.19
-#
-#  autostart: ^0.0.1
-#  device_info: ^2.0.2
-#  clear_all_notifications: ^0.0.2
+  cupertino_icons: ^1.0.6
 
+  # State management
+  provider: ^6.1.2
+
+  # Network
+  dio: ^5.4.0
+  http: ^1.2.1
+
+  # Storage
+  shared_preferences: ^2.2.2
+  path_provider: ^2.1.2
+
+  # UI
+  flutter_staggered_animations: ^1.1.1
+  intl: ^0.19.0
+  cached_network_image: ^3.3.1
+
+  # Connectivity (fixed)
+  connectivity_plus: ^5.0.2
+
+  # Permissions
+  permission_handler: ^11.3.0
+
+  # Firebase (FIXED)
+  firebase_core: ^2.25.4
+  firebase_messaging: ^14.7.10
+
+  # Notifications
+  flutter_local_notifications: ^17.0.0
+
+  # Audio
+  audioplayers: ^5.2.1
+
+  # Utils
+  url_launcher: ^6.2.5
+  open_filex: ^4.4.0
+  device_info_plus: ^10.1.0
+
+  fluttertoast: ^8.2.4
 
 dev_dependencies:
   flutter_test:
@@ -96,17 +59,13 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
   assets:
-    - assets/images/fly_eaters.png
-    - assets/images/menu_icon.png
-    - assets/images/on_off_icon.png
-    - assets/images/download_icon.png
-    - assets/images/app_icon.png
-    - assets/sounds/merchant_notify.mp3
+    - assets/images/
+    - assets/sounds/
 
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  #  adaptive_icon_foreground: "#ffffff"
   image_path_android: "assets/images/app_icon.png"
   image_path_ios: "assets/images/app_icon.png"
