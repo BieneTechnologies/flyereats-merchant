@@ -3,34 +3,34 @@ import 'package:flutter/material.dart';
 import 'package:merchant_delivery/models/sales_report_model.dart';
 import 'package:merchant_delivery/utils/hex_color.dart';
 
-class TopCategory extends StatefulWidget {
-  final List<CategoryList> categoryList;
+class TopSalesItems extends StatefulWidget {
+  final List<SalesItems> salesItems;
 
-  TopCategory({this.categoryList});
+  TopSalesItems({this.salesItems});
 
   @override
-  _TopCategoryState createState() => _TopCategoryState();
+  _TopSalesItemsState createState() => _TopSalesItemsState();
 }
 
-class _TopCategoryState extends State<TopCategory> {
-  List<charts.Series<CategoryList, String>> _seriesPieData;
+class _TopSalesItemsState extends State<TopSalesItems> {
+  List<charts.Series<SalesItems, String>> _seriesPieData;
 
   _generateData() {
     _seriesPieData.add(
       charts.Series(
-        id: 'CategoryList',
-        domainFn: (CategoryList task, _) => task.categoryName,
-        measureFn: (CategoryList task, _) => int.tryParse(task.quantity),
-        colorFn: (CategoryList task, _) => charts.ColorUtil.fromDartColor(task.color),
-        data: widget.categoryList,
-        labelAccessorFn: (CategoryList row, _) => '${row.quantity}',
+        id: 'SalesItems',
+        domainFn: (SalesItems task, _) => task.itemName,
+        measureFn: (SalesItems task, _) => int.tryParse(task.totalQty),
+        colorFn: (SalesItems task, _) => charts.ColorUtil.fromDartColor(task.color),
+        data: widget.salesItems,
+        labelAccessorFn: (SalesItems row, _) => '${row.totalQty}',
       ),
     );
   }
 
   @override
   void initState() {
-    _seriesPieData = List<charts.Series<CategoryList, String>>();
+    _seriesPieData = List<charts.Series<SalesItems, String>>();
     _generateData();
     super.initState();
   }
@@ -46,18 +46,21 @@ class _TopCategoryState extends State<TopCategory> {
             children: <Widget>[
               Container(
                 height: MediaQuery.of(context).size.height * 0.30,
-                child: widget.categoryList.length != 0
+                child: widget.salesItems.length != 0
                     ? charts.PieChart(
                         _seriesPieData,
                         animate: true,
                         animationDuration: Duration(seconds: 3),
-                        defaultRenderer: charts.ArcRendererConfig(arcRendererDecorators: [
-                          new charts.ArcLabelDecorator(
+                        /*defaultRenderer: charts.ArcRendererConfig(
+                          arcRendererDecorators: [
+                            new charts.ArcLabelDecorator(
                               showLeaderLines: true,
                               labelPadding: 6,
-                              labelPosition: charts.ArcLabelPosition.inside,
-                              insideLabelStyleSpec: new charts.TextStyleSpec(fontSize: 16, color: charts.Color.fromHex(code: "#FFFFFF")))
-                        ]),
+                              labelPosition: charts.ArcLabelPosition.auto,
+                              insideLabelStyleSpec: new charts.TextStyleSpec(fontSize: 16, color: charts.Color.fromHex(code: "#FFFFFF")),
+                            )
+                          ],
+                        ),*/
                       )
                     : Center(
                         child: Text(
@@ -68,21 +71,22 @@ class _TopCategoryState extends State<TopCategory> {
               ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                itemCount: widget.categoryList.length,
+                itemCount: widget.salesItems.length,
                 itemBuilder: (context, i) {
                   return Padding(
                     padding: const EdgeInsets.only(left: 40, right: 35, bottom: 15),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(
+                        Flexible(
                           child: Text(
-                            widget.categoryList[i].categoryName,
-                            style: TextStyle(color: widget.categoryList[i].color, fontSize: 18, fontWeight: FontWeight.bold),
+                            widget.salesItems[i].itemName,
+                            style: TextStyle(color: widget.salesItems[i].color, fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
-                        Spacer(),
+//                        Spacer(),
                         Text(
-                          widget.categoryList[i].quantity,
+                          widget.salesItems[i].totalQty,
                           style: TextStyle(color: HexColor("#3C3C3C"), fontSize: 18, fontWeight: FontWeight.bold),
                         )
                       ],
