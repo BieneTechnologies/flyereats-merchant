@@ -12,36 +12,35 @@ import 'package:merchant_delivery/utils/hex_color.dart';
 import 'package:merchant_delivery/utils/util_functions.dart';
 import 'package:merchant_delivery/widgets/search_widget.dart';
 
-class CategoriesWidget extends StatefulWidget {
+class ItemsWidget extends StatefulWidget {
   TextEditingController controller;
 
-  CategoriesWidget({
+  ItemsWidget(
     this.controller,
-  });
+  );
 
   @override
-  _CategoriesWidgetState createState() => _CategoriesWidgetState();
+  _ItemsWidgetState createState() => _ItemsWidgetState();
 }
 
-class _CategoriesWidgetState extends State<CategoriesWidget> {
+class _ItemsWidgetState extends State<ItemsWidget> {
   TextEditingController _searchKeyCtrl = new TextEditingController();
   Future<void> _future;
   Timer _debounce;
 
   _getCategoryWithItems(String searchKey) async {
     _future = Provider.of<CategoryItemProvider>(context, listen: false)
-        .getCategoryWithItems(context, searchKey, true);
+        .getCategoryWithItems(context, searchKey);
   }
 
   void _onSearchKeyChange(String value) {
-    debugPrint("Value $value");
 //    _future = Provider.of<CategoryItemProvider>(context, listen: false).getCategoryWithItems(context, value);
     if (_searchKeyCtrl.text.length > 0) {
       if (_debounce?.isActive ?? false) _debounce.cancel();
       _debounce = Timer(const Duration(milliseconds: 500), () {
         setState(() {
           _future = Provider.of<CategoryItemProvider>(context, listen: false)
-              .getCategoryWithItems(context, _searchKeyCtrl.text, true);
+              .getCategoryWithItems(context, _searchKeyCtrl.text);
         });
       });
     }
@@ -52,6 +51,7 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
   @override
   void initState() {
     _getCategoryWithItems("");
+
     _searchKeyCtrl = widget.controller;
     _searchKeyCtrl.addListener(_onSearchChanged);
     super.initState();
@@ -61,7 +61,7 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
   void dispose() {
     // _searchKeyCtrl.text = "";
     // _searchKeyCtrl.removeListener(_onSearchChanged);
-    ///_searchKeyCtrl.dispose();
+    // _searchKeyCtrl.dispose();
     _debounce?.cancel();
     super.dispose();
   }
@@ -69,7 +69,7 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [
+      children: <Widget>[
         Padding(padding: const EdgeInsets.only(top: 20)),
         SearchWidget(
           controller: _searchKeyCtrl,
@@ -100,7 +100,8 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
                           child: SlideAnimation(
                             verticalOffset: 50.0,
                             child: FadeInAnimation(
-                              child: Category(
+                              child: CategoryItem(
+                                  allItems:ciProvider.itemsWithCategory,
                                   model: ciProvider.itemsWithCategory[index],
                                   index: index),
                             ),
@@ -118,22 +119,49 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
   }
 }
 
-class Category extends StatefulWidget {
+class CategoryItem extends StatefulWidget {
+  final List<ItemsWithCategoryModel> allItems;
   final ItemsWithCategoryModel model;
   final int index;
 
-  Category({@required this.model, @required this.index});
+  CategoryItem({@required this.allItems,@required this.model, @required this.index});
 
   @override
-  _CategoryState createState() => _CategoryState();
+  _CategoryItemState createState() => _CategoryItemState();
 }
 
-class _CategoryState extends State<Category> {
-  void _timeSelectedCallback(SelectedNOT value, bool isChecked) async {
+class _CategoryItemState extends State<CategoryItem> {
+  String _statusChangedItemId = "";
+
+  void _timeSelectedCallback(SelectedNOT value, bool isOn) async {
+    var item = widget.model.items
+        .where((element) => element.itemId == _statusChangedItemId)
+        .first;
+
+
+    widget.allItems.forEach((element) {
+      element.items.forEach((itemElement) {
+        if(itemElement.itemId==_statusChangedItemId){
+          setState((){
+            itemElement.availability = !isOn ? "1" : "0";
+          });
+        }
+      });
+
+    });
+
+    // setState(() {
+    //   item.availability = !isOn ? "1" : "0";
+    // });
+
     final bool result =
         await Provider.of<CategoryItemProvider>(context, listen: false)
-            .updateItemAvailability(context, value, isChecked,
-                catId: widget.model.id);
+            .updateItemAvailability(context, value, isOn,
+                itemId: _statusChangedItemId);
+
+    if (result) {
+      showMyFlushbar(context, "success");
+    }
   }
 
   @override
@@ -142,7 +170,28 @@ class _CategoryState extends State<Category> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(padding: EdgeInsets.only(top: widget.index == 0 ? 0 : 20)),
-        Column(
+        Container(
+          color: HexColor("#F3F3F3"),
+          padding:
+              const EdgeInsets.only(top: 6, bottom: 6, left: 20, right: 20),
+          width: double.infinity,
+          child: Text(
+            widget.model.categoryName,
+            style: TextStyle(
+                color: HexColor("#3C3C3C").withOpacity(0.7),
+                fontSize: 18,
+                fontWeight: FontWeight.w500),
+          ),
+        ),
+        _convertItemsToWidget(widget.model.items, context),
+      ],
+    );
+  }
+
+  _convertItemsToWidget(List<Items> items, BuildContext context) {
+    return Column(
+      children: items.map((item) {
+        return Column(
           children: [
             Container(
               padding: const EdgeInsets.only(
@@ -151,7 +200,7 @@ class _CategoryState extends State<Category> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Flexible(
-                      child: Text(widget.model.categoryName,
+                      child: Text(item.itemName,
                           style: TextStyle(
                               fontSize: 18,
                               color: HexColor("#3C3C3C"),
@@ -159,8 +208,11 @@ class _CategoryState extends State<Category> {
                   Transform.scale(
                     scale: 0.70,
                     child: CupertinoSwitch(
-                      value: widget.model.availability == 1 ? true : false,
+                      value: item.availability == "1" ? true : false,
                       onChanged: (value) {
+                        setState(() {
+                          _statusChangedItemId = item.itemId;
+                        });
                         if (!value) {
                           nextOpeningTimeSheet(context, _timeSelectedCallback);
                         } else {
@@ -178,8 +230,8 @@ class _CategoryState extends State<Category> {
                   Divider(height: 5, thickness: 1, color: HexColor("#DEDEDE")),
             ),
           ],
-        ),
-      ],
+        );
+      }).toList(),
     );
   }
 }
